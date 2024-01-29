@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
             const { thumbnail_url, position_data, post_id, logo } = req.body;
 
             const file_ext = getFileExtensionFromUrl(thumbnail_url);
-            let filename = post_id + '-' + generateUniqueKey() + '.' + file_ext;
+            let filename = generateUniqueKey() + '.' + file_ext;
 
             const thumbnailImage = await loadImage(thumbnail_url);
             const logoImage = await loadImage(logo);
