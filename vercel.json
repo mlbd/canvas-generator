@@ -4,6 +4,10 @@
         "api/create.js": {
             "memory": 1024,
             "maxDuration": 10
+        },
+        "index.js": {
+            "memory": 50,
+            "maxDuration": 5
         }
     }
 }
