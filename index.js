@@ -1,6 +1,1 @@
-module.exports = async (req, res) => {
-    res.setHeader('content-type', 'text/html; charset=utf-8');
-    res.send(`
-        404 Error: Whoops! Looks like this route took a wrong turn and ended up in the land of forgotten endpoints. We tried sending a search party, but they got lost too. Maybe it's time to use a GPS for your API calls? 🗺️ #LostInCyberspace
-    `);
-};
+404 Error: This route tried to sneak away, but we caught it taking an unauthorized detour. Maybe it's on a secret mission or just lost its way. Either way, let's redirect it back to reality! 🚀 #LostAPIAdventures
