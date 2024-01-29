@@ -19,36 +19,22 @@ function getFileExtensionFromUrl(url) {
     }
 }
 
-/**
- * Calculates the new height based on the aspect ratio of the original width and height.
- *
- * @param {number} originalWidth - The original width
- * @param {number} originalHeight - The original height
- * @param {number} newWidth - The new width
- * @return {number} The calculated new height
- */
-function aspect_height(originalWidth, originalHeight, newWidth) {
-    // Calculate the aspect ratio
-    const aspectRatio = originalWidth / originalHeight;
+function generateUniqueKey() {
+    // Get current timestamp in milliseconds
+    const timestamp = new Date().getTime();
 
-    // Calculate the new height based on the aspect ratio
-    const newHeight = newWidth / aspectRatio;
+    // Generate a random string
+    const randomString = Math.random().toString(36).substring(2, 8);
 
-    return newHeight;
+    // Combine timestamp and random string
+    const uniqueKey = timestamp.toString() + randomString;
+
+    // Take the first 20 characters
+    const truncatedKey = uniqueKey.substring(0, 20);
+
+    return truncatedKey;
 }
-
-/**
- * A function to calculate the new y coordinate based on the given height and y coordinate.
- *
- * @param {number} newHeight - the new height value
- * @param {number} height - the current height value
- * @param {number} y - the current y coordinate value
- * @return {number} the new y coordinate value
- */
-function aspectY(newHeight, height, y) {
-    const newY = height > newHeight ? y + (height - newHeight) : y - ((newHeight - height)/2);
-    return newY;
-}
+  
 
 module.exports = async (req, res) => {
     console.log(req.query);
@@ -59,7 +45,7 @@ module.exports = async (req, res) => {
             const { thumbnail_url, position_data, post_id, logo } = req.body;
 
             const file_ext = getFileExtensionFromUrl(thumbnail_url);
-            let filename = post_id + '.' + file_ext;
+            let filename = post_id + '-' + generateUniqueKey() + '.' + file_ext;
 
             const thumbnailImage = await loadImage(thumbnail_url);
             const logoImage = await loadImage(logo);
