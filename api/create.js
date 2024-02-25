@@ -59,6 +59,15 @@ module.exports = async (req, res) => {
         try {
             const { thumbnail_url, position_data, post_id, logo } = req.body;
 
+            // Check if thumbnail_url or logo is empty
+            if (!thumbnail_url) {
+                return res.status(400).json({ error: 'thumbnail_url is required' });
+            }
+
+            if (!logo) {
+                return res.status(400).json({ error: 'logo is required' });
+            }
+
             const file_ext = getFileExtensionFromUrl(thumbnail_url);
             let filename = generateUniqueKey() + '.' + file_ext;
 
