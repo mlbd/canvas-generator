@@ -94,8 +94,8 @@ module.exports = async (req, res) => {
                 ctx.save();
                 ctx.translate(x + width / 2, y + height / 2);
                 ctx.rotate(angle);
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';; // Set the border color
-                ctx.fillRect(-width / 2 - borderWidth, -height / 2 - borderWidth, width + 2 * borderWidth, height + 2 * borderWidth);
+                // ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';; // Set the border color
+                // ctx.fillRect(-width / 2 - borderWidth, -height / 2 - borderWidth, width + 2 * borderWidth, height + 2 * borderWidth);
                 ctx.drawImage(logoImage, -width / 2, -newHeight / 2, width, newHeight);
                 ctx.restore();
             }
