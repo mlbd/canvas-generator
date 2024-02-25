@@ -34,6 +34,21 @@ function generateUniqueKey() {
 
     return truncatedKey;
 }
+
+function aspect_height(originalWidth, originalHeight, newWidth) {
+    // Calculate the aspect ratio
+    const aspectRatio = originalWidth / originalHeight;
+
+    // Calculate the new height based on the aspect ratio
+    const newHeight = newWidth / aspectRatio;
+
+    return newHeight;
+}
+
+function aspectY(newHeight, height, y) {
+    const newY = height > newHeight ? y + (height - newHeight) : y - ((newHeight - height)/2);
+    return newY;
+}
   
 
 module.exports = async (req, res) => {
@@ -55,29 +70,25 @@ module.exports = async (req, res) => {
 
             ctx.drawImage(thumbnailImage, 0, 0);
 
-            // Draw logo at specified positions
-            // logo_positions.forEach(position => {
-            //     ctx.save();
-            //     ctx.translate(position.x, position.y);
-            //     ctx.rotate(position.angle);
-            //     ctx.drawImage(
-            //         logoImage,
-            //         -position.width / 2,
-            //         -position.height / 2,
-            //         position.width,
-            //         position.height
-            //     );
-            //     ctx.restore();
-            // });
-
             if (position_data) {
                 let { x, y, width, height, angle } = position_data;
-    
-                 ctx.save();
-                 ctx.translate(x + width / 2, y + height / 2);
-                 ctx.rotate(angle);
-                 ctx.drawImage(logoImage, -width / 2, -height / 2, width, height);
-                 ctx.restore();
+
+                // Use the original width and height of the logo
+                const originalWidth = logoImage.width;
+                const originalHeight = logoImage.height;
+
+                const newHeight = aspect_height(originalWidth, originalHeight, width);
+                const newY =  aspectY(newHeight, height, y);
+
+                // Draw the logo with a border
+                const borderWidth = 5; // Set the border width as needed
+                ctx.save();
+                ctx.translate(x + width / 2, y + height / 2);
+                ctx.rotate(angle);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';; // Set the border color
+                ctx.fillRect(-width / 2 - borderWidth, -height / 2 - borderWidth, width + 2 * borderWidth, height + 2 * borderWidth);
+                ctx.drawImage(logoImage, -width / 2, -newHeight / 2, width, newHeight);
+                ctx.restore();
             }
 
             const dataUrl = canvas.toDataURL('image/png');
