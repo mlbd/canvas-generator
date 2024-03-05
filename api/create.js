@@ -122,8 +122,8 @@ module.exports = async (req, res) => {
                 const newY =  aspectY(newHeight, height, y);
 
                 // Draw the background square
-                ctx.fillStyle = 'lightblue';
-                ctx.fillRect(x, y, width, height);
+                // ctx.fillStyle = 'lightblue';
+                // ctx.fillRect(x, y, width, height);
 
                 // Draw the logo with a border
                 const borderWidth = 5; // Set the border width as needed
