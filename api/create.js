@@ -49,6 +49,25 @@ function aspectY(newHeight, height, y) {
     const newY = height > newHeight ? y + (height - newHeight) : y - ((newHeight - height)/2);
     return newY;
 }
+
+function get_orientation(attachment_metadata) {
+    // Get attachment metadata
+    if (attachment_metadata) {
+
+        // Calculate the threshold for height to be less than 60% of width
+        const heightThreshold = 0.6 * attachment_metadata.width;
+
+        // Check if width and height are equal (square)
+        if (attachment_metadata.width === attachment_metadata.height) {
+            return 'square';
+        } else if (attachment_metadata.height < heightThreshold) {
+            return 'horizontal';
+        } else {
+            return 'square';
+        }
+    }
+    return 'square';
+}
   
 
 module.exports = async (req, res) => {
@@ -57,7 +76,7 @@ module.exports = async (req, res) => {
     if (req.method === 'POST' && req.url === '/api/create') {
 
         try {
-            const { thumbnail_url, position_data, post_id, logo } = req.body;
+            const { thumbnail_url, position_data, type, post_id, logo } = req.body;
 
             // Check if thumbnail_url or logo is empty
             if (!thumbnail_url) {
@@ -74,13 +93,26 @@ module.exports = async (req, res) => {
             const thumbnailImage = await loadImage(thumbnail_url);
             const logoImage = await loadImage(logo);
 
+            let get_type = get_orientation(logoImage);
+            
+            // check if type is not empty then overwrite get_type with type
+            if( type ) get_type = type;
+
+            const getPositionData = position_data[get_type][0];
+
+            if (!getPositionData) {
+                return res.status(400).json({ error: 'getPositionData with type ' + get_type + ' is empty' });
+            }
+
+            console.log(getPositionData);
+
             const canvas = createCanvas(thumbnailImage.width, thumbnailImage.height);
             const ctx = canvas.getContext('2d');
 
             ctx.drawImage(thumbnailImage, 0, 0);
 
-            if (position_data) {
-                let { x, y, width, height, angle } = position_data;
+            if (getPositionData) {
+                let { x, y, width, height, angle } = getPositionData;
 
                 // Use the original width and height of the logo
                 const originalWidth = logoImage.width;
@@ -89,13 +121,15 @@ module.exports = async (req, res) => {
                 const newHeight = aspect_height(originalWidth, originalHeight, width);
                 const newY =  aspectY(newHeight, height, y);
 
+                // Draw the background square
+                ctx.fillStyle = 'lightblue';
+                ctx.fillRect(x, y, width, height);
+
                 // Draw the logo with a border
                 const borderWidth = 5; // Set the border width as needed
                 ctx.save();
                 ctx.translate(x + width / 2, y + height / 2);
                 ctx.rotate(angle);
-                // ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';; // Set the border color
-                // ctx.fillRect(-width / 2 - borderWidth, -height / 2 - borderWidth, width + 2 * borderWidth, height + 2 * borderWidth);
                 ctx.drawImage(logoImage, -width / 2, -newHeight / 2, width, newHeight);
                 ctx.restore();
             }
@@ -106,7 +140,7 @@ module.exports = async (req, res) => {
                 thumbnail_url: thumbnail_url,
                 logo: logo,
                 post_id: post_id,
-                position_data: position_data,
+                position_data: getPositionData,
                 method: req.method,
                 url: req.url,
                 filename: filename,
